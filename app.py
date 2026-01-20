@@ -4,9 +4,9 @@ import urllib.parse
 # ژمارەیا تە یا واتس ئەپێ
 MY_WHATSAPP = "9647504909929" 
 
-st.set_page_config(page_title="Mardin Qasrok", page_icon="🍴")
+st.set_page_config(page_title="Mardin Qasrok", page_icon="🍕")
 
-# دیزاینا سایتێ (ڕەنگی ڕەش و وێنەیێ پاشبنەمایێ)
+# دیزاینا سایتێ
 st.markdown("""
 <style>
     .stApp {
@@ -24,6 +24,15 @@ st.markdown("""
         margin-bottom: 20px;
         text-align: center;
     }
+    /* ستایلێ دوکما سۆر */
+    .stButton>button {
+        background-color: #e74c3c !important;
+        color: white !important;
+        border-radius: 10px;
+        width: 100%;
+        border: none;
+    }
+    input, textarea { background-color: #222 !important; color: white !important; text-align: right !important; direction: rtl !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -40,7 +49,7 @@ menu_data = [
 if "cart" not in st.session_state:
     st.session_state.cart = []
 
-# نیشاندانا خوارنان
+# نیشاندانا خوارنان دگەل بۆشایییا تێبینییان
 for food in menu_data:
     with st.container():
         st.markdown(f'<div class="food-card">', unsafe_allow_html=True)
@@ -50,14 +59,18 @@ for food in menu_data:
         f_type = st.selectbox(f"جۆرێ خوارنێ:", food['opts'], key=f"t_{food['id']}")
         f_qty = st.number_input(f"ژمارە:", min_value=1, max_value=20, value=1, key=f"q_{food['id']}")
         
+        # بۆشایییا تێبینییا تایبەت بۆ هەر خوارنەکێ
+        f_note = st.text_input(f"تێبینی بۆ {food['name']}:", placeholder="بۆ نموونە: بلا باش قەلی بیت...", key=f"n_{food['id']}")
+        
         if st.button(f"🛒 زێدە بکە", key=f"b_{food['id']}"):
             st.session_state.cart.append({
                 "name": food['name'],
                 "type": f_type,
                 "qty": f_qty,
+                "note": f_note,
                 "price_val": food['price'] * f_qty
             })
-            st.toast(f"✅ زێدە بوو")
+            st.toast(f"✅ {food['name']} زێدە بوو")
         st.markdown('</div>', unsafe_allow_html=True)
 
 # پشکا سەبەتەی و ناردنێ
@@ -71,24 +84,25 @@ if st.session_state.cart:
         qty = item.get('qty', 1)
         name_item = item.get('name', 'خوارن')
         type_item = item.get('type', 'ئاسایی')
+        note_item = item.get('note', '')
         
         grand_total += price
-        st.write(f"🔹 {qty} {name_item} ({type_item}) = {price} د.ع")
+        st.write(f"🔹 {qty} {name_item} ({type_item}) - {note_item}")
         
-        # ل ڤێرە من نیشانا (x) لادا دا تەنێ ژمارە و ناڤ بیت
-        details += f"- {qty} {name_item} ({type_item})\n"
+        # زێدەکرنا تێبینییا کڕیاری بۆ ناڤ نامەیا واتس ئەپێ
+        details += f"- {qty} {name_item} ({type_item})"
+        if note_item:
+            details += f" [تێبینی: {note_item}]"
+        details += "\n"
     
     st.subheader(f"💰 کۆمێ گشتی: {grand_total} دینار")
     
     # ئامادەکردنا نامەیێ
-    msg = f"📦 تەڵەبەکا نوو هات!\n\n🍴 خوارنێن داواکری:\n{details}\n💵 کۆمێ گشتی: {grand_total} دینار"
+    msg = f"📦 تەڵەبەکا نوو هات!\n\n🍴 خوارن:\n{details}\n💵 کۆم: {grand_total} دینار"
     url = f"https://wa.me/{MY_WHATSAPP}?text={urllib.parse.quote(msg)}"
     
-    # دوکما واتس ئەپێ
     st.markdown(f'<a href="{url}" target="_blank" style="background:#25d366; color:white; padding:15px; border-radius:10px; text-decoration:none; display:block; text-align:center; font-weight:bold;">✅ تەمامکرن د واتس ئەپێ دا</a>', unsafe_allow_html=True)
-    
-    # پەیاما ل ژێر دوکمێ
-    st.info("تەڵەب ب کێمتر ژ ١ سەعەت دێ گەهیت. ئەگەر گیرۆ بوو ژبەر خەپسەیێ یە. دگەل ڕێز و سلاڤان.")
+    st.info("تەڵەب ب کێمتر ژ ١ سەعەت دێ گەهیت. دگەل ڕێز و سلاڤان.")
 
 if st.button("🗑️ پاکژکرنا سەبەتەی"):
     st.session_state.cart = []
