@@ -1,7 +1,7 @@
 import streamlit as st
 import urllib.parse
 
-# ژمارەیا تە یا واتس ئەپێ
+# ژمارەیا واتس ئەپا تە
 MY_WHATSAPP = "9647504909929" 
 
 st.set_page_config(page_title="Mardin Qasrok", page_icon="🍴")
@@ -25,15 +25,23 @@ st.markdown("""
         text-align: center;
     }
     input, textarea { background-color: #222 !important; color: white !important; text-align: right !important; }
+    .success-msg {
+        background-color: rgba(37, 211, 102, 0.2);
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid #25d366;
+        text-align: center;
+        margin-top: 20px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 st.title("🍴 خارنگەها ماردین قەسرۆک")
 
-# زانیاریێن کڕیاری
-st.subheader("📋 زانیاریێن کڕیاری")
-name = st.text_input("👤 ناڤێ تە:", placeholder="ناڤێ خۆ لێرە بنووسە")
-user_note = st.text_area("📝 تێبینی (چ تە دڤێت؟):", placeholder="لێرە بنڤیسە...")
+# پشکا زانیارییان
+st.subheader("📋 زانیاریێن گەهاندنێ")
+address = st.text_input("📍 جهێ تە (ناڤ و نیشان):", placeholder="بۆ نموونە: قەسرۆک - نێزیک قوتابخانێ")
+user_note = st.text_area("📝 تێبینییەکا دی هەیە؟", placeholder="بۆ نموونە: بێ بیبەر بیت...")
 
 st.divider()
 
@@ -64,19 +72,18 @@ for food in menu_data:
                 "name": food['name'],
                 "type": f_type,
                 "qty": f_qty,
-                "price_val": food['price'] * f_qty # ناڤێ ڤی گۆڕا (Variable) من گوهۆڕی دا شاشی نەمینیت
+                "price_val": food['price'] * f_qty
             })
             st.toast(f"✅ زێدە بوو")
         st.markdown('</div>', unsafe_allow_html=True)
 
-# پشکا سەبەتەی و ناردنێ
+# پشکا ناردنێ و پەیاما سەرکەفتنێ
 if st.session_state.cart:
     st.divider()
     st.header("🛒 سەبەتەیا کڕینێ")
     grand_total = 0
     details = ""
     for item in st.session_state.cart:
-        # بکارئینانا .get دا کو شاشییێن KeyError نەمینن
         price = item.get('price_val', 0)
         qty = item.get('qty', 1)
         name_item = item.get('name', 'خوارن')
@@ -89,12 +96,24 @@ if st.session_state.cart:
     st.subheader(f"💰 کۆمێ گشتی: {grand_total} دینار")
     
     if st.button("🚀 تەمامکرنا داخازیێ و ناردن بۆ واتس ئەپ"):
-        if name:
-            msg = f"📦 تەڵەبەکا نوو!\n👤 کڕیار: {name}\n📝 تێبینی: {user_note}\n\n🍴 خوارن:\n{details}\n💰 کۆم: {grand_total} دینار"
+        if address:
+            msg = f"📦 تەڵەبەکا نوو هات!\n📍 جهێ کڕیاری: {address}\n📝 تێبینی: {user_note}\n\n🍴 خوارنێن داواکری:\n{details}\n💵 کۆمێ گشتی: {grand_total} دینار"
             url = f"https://wa.me/{MY_WHATSAPP}?text={urllib.parse.quote(msg)}"
-            st.markdown(f'<a href="{url}" target="_blank" style="background:#25d366; color:white; padding:15px; border-radius:10px; text-decoration:none; display:block; text-align:center; font-weight:bold;">✅ کلیک بکە بۆ ناردنێ</a>', unsafe_allow_html=True)
+            
+            # نیشاندانا لینکێ واتس ئەپێ
+            st.markdown(f'<a href="{url}" target="_blank" style="background:#25d366; color:white; padding:15px; border-radius:10px; text-decoration:none; display:block; text-align:center; font-weight:bold; margin-bottom: 20px;">✅ کلیک بکە بۆ تەمامکرنێ د واتس ئەپێ دا</a>', unsafe_allow_html=True)
+            
+            # --- پەیاما ڕێزگرتنێ کو ل سەر سایتێ تە دێ دیار بیت ---
+            st.markdown(f"""
+            <div class="success-msg">
+                <h3>🙏 سوپاس بۆ کڕینا تە</h3>
+                <p>داخازیا تە هاتە وەرگرتن. ب کێمتر ژ <b>١ سەعەت</b> دێ گەهیتە دەستێ تە.</p>
+                <p><small>ئەگەر هندەک گیرۆ بوو، ببورە ژبەر خەپسەیا ڕێگایە. مە دڤێت باشترین خزمەت پێشکێشی تە بکەین.</small></p>
+                <p><b>دگەل ڕێز و سلاڤان، خارنگەها ماردین</b></p>
+            </div>
+            """, unsafe_allow_html=True)
         else:
-            st.error("⚠️ تکایە ناڤێ خۆ بنڤیسە!")
+            st.error("⚠️ تکایە جهێ خۆ بنڤیسە دا خوارن بگەهیتە دەف تە!")
 
 if st.button("🗑️ پاکژکرنا سەبەتەی"):
     st.session_state.cart = []
