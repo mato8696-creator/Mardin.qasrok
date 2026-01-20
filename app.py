@@ -2,7 +2,7 @@ import streamlit as st
 import urllib.parse
 
 # ژمارەیا تە یا واتس ئەپێ (ڕاست بکە)
-MY_WHATSAPP = "9647500000000" 
+MY_WHATSAPP = "7504909929" 
 
 st.set_page_config(page_title="Matin Food", page_icon="🍔")
 
