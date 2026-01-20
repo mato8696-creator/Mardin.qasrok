@@ -4,9 +4,9 @@ import urllib.parse
 # ژمارەی واتس ئەپەکەت
 MY_WHATSAPP = "9647504909929" 
 
-st.set_page_config(page_title="Mardin Food", page_icon="🍕")
+st.set_page_config(page_title="Mardin Food & Maps", page_icon="🍕")
 
-# دیزاینا سایتێ (CSS)
+# دیزاینا سایتێ
 st.markdown("""
 <style>
     .stApp { background-color: #f8f9fa; }
@@ -27,18 +27,33 @@ st.markdown("""
         color: white !important;
         border-radius: 8px;
     }
+    .map-btn {
+        background-color: #4285F4 !important; /* ڕەنگێ شین یێ گۆگڵ مەپس */
+        color: white !important;
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+        display: block;
+        text-decoration: none;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 st.title("🍴 خارنگەها ماردین قەسرۆک")
 
-# --- پشکا زانیارییان (ئەوێن تە دڤێت هەر حازر بن) ---
-st.subheader("📋 زانیاریێن کڕیاری")
-col1, col2 = st.columns(2)
-with col1:
-    address = st.text_input("📍 ناڤ و نیشان:", placeholder="جهێ خۆ بنڤیسە")
-with col2:
-    name = st.text_input("👤 ناڤێ تە:", placeholder="ناڤێ خۆ بنڤیسە")
+# --- پشکا زانیارییان و خەریتەیێ ---
+st.subheader("📋 زانیاریێن گەهاندنێ")
+
+name = st.text_input("👤 ناڤێ تە:", placeholder="ناڤێ خۆ بنڤیسە")
+
+# زێدەکرنا ڕێنمایییەکێ بۆ کڕیاری کا چەوا خەریتەیێ بنێریت
+st.info("📍 بۆ هندێ خوارن بگەهیتە دەف تە، کلیکێ ل دوکما شین یا خوارێ بکە، پاشان 'Share' و پاشان 'Copy Link' بکە و ل ڤێرە دانە.")
+
+st.markdown('<a href="https://www.google.com/maps" target="_blank" class="map-btn">📍 ڤەکرنا Google Maps بۆ کۆپیکرنا جهی</a>', unsafe_allow_html=True)
+
+map_link = st.text_input("🔗 لینکێ جهێ خۆ (Location) ل ڤێرە 'Paste' بکە:", placeholder="لینکێ لێرە دانێ...")
 
 user_note = st.text_area("📝 تێبینی (چ تە دڤێت؟):", placeholder="بۆ نموونە: بێ بیبەر بیت...")
 
@@ -77,9 +92,9 @@ if st.session_state.cart:
     st.write(f"کۆمێ گشتی: **{total} دینار**")
     
     if st.button("🚀 ناردنا تەڵەبێ بۆ واتس ئەپ"):
-        if name and address:
-            msg = f"📦 تەڵەبەکا نوو!\n👤 کڕیار: {name}\n📍 جهـ: {address}\n📝 تێبینی: {user_note}\n\n🍴 خوارن:\n{summary}\n💰 کۆم: {total} دینار"
+        if name and map_link:
+            msg = f"📦 تەڵەبەکا نوو!\n👤 کڕیار: {name}\n📍 خەریتە: {map_link}\n📝 تێبینی: {user_note}\n\n🍴 خوارن:\n{summary}\n💰 کۆم: {total} دینار"
             url = f"https://wa.me/{MY_WHATSAPP}?text={urllib.parse.quote(msg)}"
             st.markdown(f'<a href="{url}" target="_blank" style="background:#25d366; color:white; padding:15px; border-radius:10px; text-decoration:none; display:block; text-align:center; font-weight:bold;">تەمامکرنا تەڵەبێ ل واتس ئەپێ</a>', unsafe_allow_html=True)
         else:
-            st.error("⚠️ تکایە ناڤ و جهێ خۆ بنڤیسە!")
+            st.error("⚠️ تکایە ناڤ و لینکێ خەریتەیێ (Location) بنڤیسە!")
