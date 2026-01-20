@@ -1,10 +1,10 @@
 import streamlit as st
 import urllib.parse
 
-# ژمارەیا تە یا واتس ئەپێ (ڕاست بکە)
-MY_WHATSAPP = "7504909929" 
+# ژمارەیا تە یا واتس ئەپێ (پێدڤییە ب 964 دەسپێ بکەت)
+MY_WHATSAPP = "9647504909929" 
 
-st.set_page_config(page_title="Matin Food", page_icon="🍔")
+st.set_page_config(page_title="Mardin Food", page_icon="🍔")
 
 # دیزاینا سایتێ (CSS)
 st.markdown("""
@@ -13,51 +13,75 @@ st.markdown("""
     h1, h2, h3, p { color: #1a1a1a !important; text-align: right; direction: rtl; }
     .food-card {
         background: #f9f9f9;
-        padding: 20px;
+        padding: 15px;
         border-radius: 15px;
         border: 1px solid #eeeeee;
-        margin-bottom: 15px;
-        text-align: right;
+        margin-bottom: 20px;
+        text-align: center;
     }
-    .price { color: #25d366; font-size: 20px; font-weight: bold; }
+    .price { color: #25d366; font-size: 22px; font-weight: bold; margin-top: 10px; }
     .stButton>button {
         width: 100%;
         background-color: #25d366 !important;
         color: white !important;
         border-radius: 10px;
-        border: none;
-        padding: 10px;
+        font-weight: bold;
     }
+    img { border-radius: 10px; object-fit: cover; }
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🍴 خارنگە ها ماردین قەسرۆک")
-st.write("بخێر بێی! باشترین خوارن ل دەف مە پەیدا دبن.")
+st.title("🍴 خارنگەها ماردین قەسرۆک")
+st.write("ب خێرهاتی بۆ باشترین خوارنێن قەسرۆکێ")
 
-# لیستەیا خوارنان ب وێنە (Emoji)
+# لیستەیا خوارنان دگەل وێنەیان
 menu = [
-    {"name": "پیتزا ایطالي 🍕", "price": 5000 "هزار},
-    {"name": "لەفا سوری", "price": 2000 "هزار},
-    {"name": "لە فا مریشکی", "price": 1000 " هزار},
-    {"name": "لەحم معجین ", "price": 1500 2500 3000},
-    {"name": "کۆکا کۆلا 🥤", "price": 500},
-    {"name": "ئاڤ 💧", "price": 250}
+    {
+        "name": "پیتزا ایطالي 🍕", 
+        "price": 5000, 
+        "img": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400"
+    },
+    {
+        "name": "لەفا سوری 🌯", 
+        "price": 2000, 
+        "img": "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=400"
+    },
+    {
+        "name": "لەفا مریشکی 🍗", 
+        "price": 1000, 
+        "img": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400"
+    },
+    {
+        "name": "لەحم بعجین 🌮", 
+        "price": 2500, 
+        "img": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400"
+    },
+    {
+        "name": "کۆکا کۆلا 🥤", 
+        "price": 500, 
+        "img": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400"
+    },
+    {
+        "name": "ئاڤ 💧", 
+        "price": 250, 
+        "img": "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400"
+    }
 ]
 
 if "cart" not in st.session_state:
     st.session_state.cart = []
 
-# نیشاندانا خوارنان ب شێوازێ کارت
+# نیشاندانا خوارنان
 for food in menu:
-    st.markdown(f"""
-    <div class="food-card">
-        <div style="font-size: 22px; font-weight: bold;">{food['name']}</div>
-        <div class="price">بها: {food['price']} دینار</div>
-    </div>
-    """, unsafe_allow_html=True)
-    if st.button(f"کڕینا {food['name']}", key=food['name']):
-        st.session_state.cart.append(food)
-        st.toast(f"{food['name']} زێدە بوو")
+    with st.container():
+        st.markdown(f'<div class="food-card">', unsafe_allow_html=True)
+        st.image(food['img'], use_container_width=True)
+        st.markdown(f'<div style="font-size: 24px; font-weight: bold;">{food["name"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="price">بها: {food["price"]} دینار</div>', unsafe_allow_html=True)
+        if st.button(f"کڕینا {food['name']}", key=food['name']):
+            st.session_state.cart.append(food)
+            st.toast(f"✅ {food['name']} زێدە بوو")
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # پشکا سەبەتەی
 if st.session_state.cart:
@@ -76,6 +100,6 @@ if st.session_state.cart:
     if st.button("✅ ناردنا تەڵەبێ بۆ واتس ئەپ"):
         if name and address:
             summary = "\n".join([f"- {i['name']}" for i in st.session_state.cart])
-            msg = f"📦 تەڵەبەکا نوو!\n👤 کڕیار: {name}\n📍 ناڤ و نیشان: {address}\n\n🍴 خوارن:\n{summary}\n💰 کۆم: {total} دینار"
+            msg = f"📦 تەڵەبەکا نوو!\n👤 کڕیار: {name}\n📍 جهـ: {address}\n\n🍴 خوارن:\n{summary}\n💰 کۆم: {total} دینار"
             url = f"https://wa.me/{MY_WHATSAPP}?text={urllib.parse.quote(msg)}"
             st.markdown(f'<a href="{url}" target="_blank" style="background:#25d366; color:white; padding:15px; border-radius:10px; text-decoration:none; display:block; text-align:center; font-weight:bold;">کلیک بکە بۆ تەمامکرنێ د واتس ئەپێ دا</a>', unsafe_allow_html=True)
