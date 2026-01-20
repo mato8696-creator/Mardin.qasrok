@@ -1,100 +1,118 @@
 import streamlit as st
 import urllib.parse
 
-# ژمارەی واتس ئەپەکەت
 MY_WHATSAPP = "9647504909929" 
 
-st.set_page_config(page_title="Mardin Food & Maps", page_icon="🍕")
+st.set_page_config(page_title="Mardin Food Pro", page_icon="🍕")
 
 # دیزاینا سایتێ
 st.markdown("""
 <style>
-    .stApp { background-color: #f8f9fa; }
+    .stApp { background-color: #ffffff; }
     h1, h2, h3, p, label { color: #1a1a1a !important; text-align: right; direction: rtl; }
     .food-card {
-        background-color: white;
-        padding: 15px;
-        border-radius: 15px;
-        border: 1px solid #e0e0e0;
-        margin-bottom: 15px;
-        text-align: center;
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 20px;
+        border: 2px solid #eeeeee;
+        margin-bottom: 20px;
     }
-    .price { color: #2ecc71; font-size: 20px; font-weight: bold; }
-    input, textarea { text-align: right !important; direction: rtl !important; }
-    .stButton>button {
-        width: 100%;
-        background-color: #27ae60 !important;
-        color: white !important;
-        border-radius: 8px;
-    }
-    .map-btn {
-        background-color: #4285F4 !important; /* ڕەنگێ شین یێ گۆگڵ مەپس */
-        color: white !important;
-        padding: 10px;
-        border-radius: 8px;
-        text-align: center;
-        display: block;
-        text-decoration: none;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
+    .stNumberInput, .stSelectbox { direction: rtl !important; }
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🍴 خارنگەها ماردین قەسرۆک")
+st.title("🍴 مینیویا پێشکەفتییا ماردین قەسرۆک")
 
-# --- پشکا زانیارییان و خەریتەیێ ---
-st.subheader("📋 زانیاریێن گەهاندنێ")
-
-name = st.text_input("👤 ناڤێ تە:", placeholder="ناڤێ خۆ بنڤیسە")
-
-# زێدەکرنا ڕێنمایییەکێ بۆ کڕیاری کا چەوا خەریتەیێ بنێریت
-st.info("📍 بۆ هندێ خوارن بگەهیتە دەف تە، کلیکێ ل دوکما شین یا خوارێ بکە، پاشان 'Share' و پاشان 'Copy Link' بکە و ل ڤێرە دانە.")
-
-st.markdown('<a href="https://www.google.com/maps" target="_blank" class="map-btn">📍 ڤەکرنا Google Maps بۆ کۆپیکرنا جهی</a>', unsafe_allow_html=True)
-
-map_link = st.text_input("🔗 لینکێ جهێ خۆ (Location) ل ڤێرە 'Paste' بکە:", placeholder="لینکێ لێرە دانێ...")
-
-user_note = st.text_area("📝 تێبینی (چ تە دڤێت؟):", placeholder="بۆ نموونە: بێ بیبەر بیت...")
+# پشکا زانیاریێن گشتی
+with st.expander("👤 زانیاریێن کڕیار و جهی (لێرە پڕ بکە)"):
+    name = st.text_input("ناڤێ تە:", placeholder="ناڤێ خۆ بنڤیسە")
+    map_link = st.text_input("لینکێ خەریتەیێ (Location):", placeholder="لینکێ لێرە دانێ")
+    user_note = st.text_area("تێبینییەکا دی هەیە؟", placeholder="بۆ نموونە: بێ پیاز...")
 
 st.divider()
 
-# --- لیستا خوارنان ---
-st.subheader("🍕 مینیویا خوارنێ")
-menu = [
-    {"name": "پیتزا ایطالي 🍕", "price": 5000, "img": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400"},
-    {"name": "لەفا سوری 🌯", "price": 2000, "img": "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=400"},
-    {"name": "لەفا مریشکی 🍗", "price": 1000, "img": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400"},
-    {"name": "لەحم بعجین 🌮", "price": 2500, "img": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400"}
+# لیستا خوارنان دگەل فەراخی (Options)
+menu_data = [
+    {
+        "id": "pizza",
+        "name": "پیتزا ایطالي 🍕",
+        "price": 5000,
+        "options": ["گۆشت 🥩", "مریشک 🍗", "نیڤ ب نیڤ 🌗", "سەوزە 🥦"],
+        "img": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400"
+    },
+    {
+        "id": "lafa",
+        "name": "لەفا سوری 🌯",
+        "price": 2000,
+        "options": ["فەلافل 🧆", "پەتاتە 🍟", "تێکەڵاو ✨"],
+        "img": "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=400"
+    },
+    {
+        "id": "chicken",
+        "name": "لەفا مریشکی 🍗",
+        "price": 1000,
+        "options": ["بێ سۆس ❌", "سۆس زێدە 🧴", "تیژ (حار) 🔥"],
+        "img": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400"
+    }
 ]
 
 if "cart" not in st.session_state:
     st.session_state.cart = []
 
-for food in menu:
+st.subheader("🍕 خوارنەکێ هەلبژێره و جۆرێ وێ دیار بکە")
+
+for food in menu_data:
     with st.container():
         st.markdown(f'<div class="food-card">', unsafe_allow_html=True)
-        st.image(food['img'], use_container_width=True)
-        st.markdown(f'<div style="font-size: 22px; font-weight: bold; color:black;">{food["name"]}</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="price">بها: {food["price"]} دینار</div>', unsafe_allow_html=True)
-        if st.button(f"➕ زێدە بکە بۆ سەبەتەی", key=food['name']):
-            st.session_state.cart.append(food)
-            st.toast(f"✅ {food['name']} زێدە بوو")
+        col_img, col_txt = st.columns([1, 2])
+        
+        with col_img:
+            st.image(food['img'], use_container_width=True)
+        
+        with col_txt:
+            st.markdown(f"### {food['name']}")
+            st.markdown(f"**بها: {food['price']} دینار**")
+            
+            # فەراخا جۆرێ خوارنێ
+            selected_type = st.selectbox(f"جۆرێ {food['name']}:", food['options'], key=f"type_{food['id']}")
+            
+            # فەراخا ژمارەیێ
+            quantity = st.number_input(f"چەند دانە؟", min_value=1, max_value=20, value=1, key=f"qty_{food['id']}")
+            
+            if st.button(f"🛒 زێدە بکە", key=f"btn_{food['id']}"):
+                item_total = food['price'] * quantity
+                st.session_state.cart.append({
+                    "name": food['name'],
+                    "type": selected_type,
+                    "qty": quantity,
+                    "total_price": item_total
+                })
+                st.toast(f"✅ {quantity} {food['name']} ({selected_type}) زێدە بوو")
         st.markdown('</div>', unsafe_allow_html=True)
 
-# --- پشکا سەبەتەی و ناردنێ ---
+# پیشاندانا سەبەتەی و کۆمێ گشتی
 if st.session_state.cart:
     st.divider()
-    st.subheader("🛒 سەبەتەیا تە")
-    total = sum(item['price'] for item in st.session_state.cart)
-    summary = "\n".join([f"- {i['name']}" for i in st.session_state.cart])
+    st.header("🛒 سەبەتەیا کڕینێ")
+    grand_total = 0
+    order_details = ""
     
-    st.write(f"کۆمێ گشتی: **{total} دینار**")
+    for item in st.session_state.cart:
+        line_price = item['total_price']
+        grand_total += line_price
+        st.write(f"🔹 {item['qty']} دانە {item['name']} - جۆر: {item['type']} = **{line_price} د.ع**")
+        order_details += f"- {item['qty']}x {item['name']} ({item['type']})\n"
+
+    st.markdown(f"## 💰 کۆمێ گشتی: {grand_total} دینار")
     
-    if st.button("🚀 ناردنا تەڵەبێ بۆ واتس ئەپ"):
+    if st.button("🚀 فرێکرنا تەڵەبێ بۆ واتس ئەپێ"):
         if name and map_link:
-            msg = f"📦 تەڵەبەکا نوو!\n👤 کڕیار: {name}\n📍 خەریتە: {map_link}\n📝 تێبینی: {user_note}\n\n🍴 خوارن:\n{summary}\n💰 کۆم: {total} دینار"
+            msg = f"📦 تەڵەبەکا نوو هات!\n\n👤 کڕیار: {name}\n📍 جهـ: {map_link}\n📝 تێبینی: {user_note}\n\n🍴 خوارنێن داواکری:\n{order_details}\n💵 کۆمێ گشتی: {grand_total} دینار"
             url = f"https://wa.me/{MY_WHATSAPP}?text={urllib.parse.quote(msg)}"
-            st.markdown(f'<a href="{url}" target="_blank" style="background:#25d366; color:white; padding:15px; border-radius:10px; text-decoration:none; display:block; text-align:center; font-weight:bold;">تەمامکرنا تەڵەبێ ل واتس ئەپێ</a>', unsafe_allow_html=True)
+            st.markdown(f'<a href="{url}" target="_blank" style="background:#25d366; color:white; padding:15px; border-radius:10px; text-decoration:none; display:block; text-align:center; font-weight:bold;">تەمامکرن د واتس ئەپێ دا</a>', unsafe_allow_html=True)
         else:
-            st.error("⚠️ تکایە ناڤ و لینکێ خەریتەیێ (Location) بنڤیسە!")
+            st.warning("⚠️ تکایە ناڤ و جهێ خۆ (Location) دیار بکە.")
+
+if st.button("🗑️ پاکژکرنا سەبەتەی"):
+    st.session_state.cart = []
+    st.rerun()
